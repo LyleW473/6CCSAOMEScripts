@@ -5,7 +5,43 @@ from dataset import (
     graph_disconnected, expected_disconnected
 )
 
-def bellman_ford(graph):
+
+def bellman_ford_standard(graph):
+    """
+    Standard Bellman-Ford algorithm
+    """
+    parent_dict = {}
+    distances_dict = {"s": 0}
+    for node in graph:
+        if node != "s":
+            distances_dict[node] = float("inf")
+
+    # Find shortest paths from s to all other vertices in the graph
+    n_stages = len(graph) - 1 # We need to relax edges at most |V| - 1 times
+    for i in range(n_stages):
+        for source_node in graph:
+            for neighbour_node, edge_weight in graph[source_node]:
+                new_distance = distances_dict[source_node] + edge_weight
+                if new_distance < distances_dict[neighbour_node]:
+                    distances_dict[neighbour_node] = new_distance
+                    parent_dict[neighbour_node] = source_node
+    
+    # check for negative cycles
+    for i in range(n_stages):
+        for source_node in graph:
+            for neighbour_node, edge_weight in graph[source_node]:
+                new_distance = distances_dict[source_node] + edge_weight
+                if new_distance < distances_dict[neighbour_node]:
+                    return_dict = {node: float("inf") for node in graph}
+                    return_dict["s"] = 0
+                    return return_dict
+    
+    return distances_dict
+
+def bellman_ford_fifo(graph):
+    """
+    Bellman-Ford algorithm using a FIFO queue to keep track of which nodes to relax next.
+    """
     parent_dict = {}
     distances_dict = {"s": 0}
     for node in graph:
@@ -43,7 +79,7 @@ def check_result(result, expected, name):
         if result[node] != expected[node]:
             print(f"Test failed for node {node}: expected {expected[node]}, got {result[node]} [{name}]")
             return
-    print("Test passed!")
+    print(f"Test passed for [{name}]")
 
 if __name__ == "__main__":
 
@@ -53,5 +89,8 @@ if __name__ == "__main__":
         (graph_negative_cycle, expected_negative_cycle, "negative_cycle"),
         (graph_disconnected, expected_disconnected, "disconnected")
     ]:
-        result = bellman_ford(graph)
-        check_result(result, expected, name)
+        result = bellman_ford_fifo(graph)
+        check_result(result, expected, name + " (fifo)")
+
+        result2 = bellman_ford_standard(graph)
+        check_result(result2, expected, name + " (standard)")
