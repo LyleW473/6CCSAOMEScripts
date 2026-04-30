@@ -67,6 +67,13 @@ graph_negative_cycle = {
 #
 # This is reachable from s, so there is no finite shortest path
 # to a, b, c, or d.
+expected_negative_cycle = {
+    "s": 0,
+    "a": math.inf,
+    "b": math.inf,
+    "c": math.inf,
+    "d": math.inf
+}
 
 
 # ------------------------------------------------------------
