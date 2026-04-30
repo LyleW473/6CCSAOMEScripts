@@ -75,6 +75,9 @@ def bellman_ford_fifo(graph):
     return distances_dict
 
 def check_result(result, expected, name):
+    """
+    Check if the result from the algorithm matches the expected output.
+    """
     for node in expected:
         if result[node] != expected[node]:
             print(f"Test failed for node {node}: expected {expected[node]}, got {result[node]} [{name}]")
